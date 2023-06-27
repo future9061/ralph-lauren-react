@@ -1,11 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
-import { logIn, logOut } from "../api/firebase";
+import { logIn, logOut, onUserStateChange } from "../api/firebase";
 import { useState } from "react";
+import { useEffect } from "react";
+import User from "./User";
 
 export default function Navbar() {
   const [user, setUser] = useState();
+
+  //화면이 마운트(리로드 될때) 로그인이 되어있는지 아닌지 상태를 알아보는 함수 호출
+  useEffect(() => {
+    onUserStateChange((user) => {
+      setUser(user);
+      console.log("user", user);
+    });
+  }, []);
 
   const handleLogin = () => {
     logIn().then(setUser);
@@ -29,6 +39,7 @@ export default function Navbar() {
             <Link to="/products/new">
               <HiPencilAlt />
             </Link>
+            {user && <User user={user} />}
             {!user && <button onClick={handleLogin}>login</button>}
             {user && <button onClick={handleLogout}>logout</button>}
           </nav>
