@@ -3,7 +3,7 @@
 
 
 ## 🖥️ 프로젝트 소개
-ralph-rouren 사이트를 클론 하여 route, firebase를 이요한 server 이용을 해보았습니다. 
+ralph-rouren 사이트를 클론 하여 route, firebase를 이용한 DB관리를 해봤습니다
 <br>
 
 ## 🕰️ 개발 기간
