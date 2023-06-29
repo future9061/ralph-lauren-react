@@ -17,3 +17,10 @@ body {
   @apply w-full;
 }
 
+input {
+  @apply  p-4 border border-slate-200 my-1 rounded-sm
+}
+input:focus{
+  @apply outline outline-slate-700 bg-slate-100
+}
+

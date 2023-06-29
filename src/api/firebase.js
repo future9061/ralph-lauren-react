@@ -6,7 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getDatabase, get, ref } from "firebase/database";
+import { getDatabase, get, set, ref } from "firebase/database";
+import uuid from "react-uuid";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -19,46 +20,55 @@ const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 
-export function logIn() {
+export function login() {
   return signInWithPopup(auth, provider)
     .then((result) => {
       const user = result.user;
-
-      // 로그인하면 user 정보 보이게 Navbar에 보이게 if문 유저가 있으면 가져오고 아니면 말고
       return user;
     })
     .catch(console.error);
-  //   .catch((error) => console.error(error)); 받아오는 인자랑 같으면 생략 가능
 }
 
-export async function logOut() {
+export async function logout() {
   return signOut(auth).then(() => null);
 }
 
-//auth 유저 유무 받아오는 파라미터
-export async function onUserStateChange(callback) {
+export function onUserStateChange(callback) {
   onAuthStateChanged(auth, async (user) => {
-    //사용자가 로그인 한 경우
-    const updateUser = user ? await adminUser(user) : null;
-
-    callback(updateUser);
+    const updatedUser = user ? await adminUser(user) : null;
+    callback(updatedUser);
   });
 }
 
 const database = getDatabase(app);
 
-//사용자가 addmin 권한이 있는지 확인
-//-> isAdmin을 user안에 넣음 user 있으면 true 없으면 flase
-//user를 가져와서(그럼 데이터를 읽어야하니가 공식문서 데이터에서 데이터 한번만 읽기)
 async function adminUser(user) {
-  console.log(user);
-  return get(ref(database, "addmins")).then((snapshot) => {
+  return get(ref(database, "admins")).then((snapshot) => {
     if (snapshot.exists()) {
-      const addmin = snapshot.val();
-      const isAdmin = addmin.includes(user.uid);
+      const admins = snapshot.val();
+      const isAdmin = admins.includes(user.uid);
       return { ...user, isAdmin };
     }
+    return user;
+  });
+}
+//제품 등록
+export async function addNewProduct(product, image) {
+  const id = uuid();
+  return set(ref(database, `products/${id}`), {
+    ...product,
+    id,
+    price: parseInt(product.price),
+    options: product.options.split(","),
+    image,
   });
 }
 
-//사용자에게 알려줌
+//제품 가져오기
+export async function getProduct() {
+  return get(ref(database, "products")).then((snapshot) => {
+    if (snapshot.exists()) {
+      return Object.values(snapshot.val());
+    }
+  });
+}
