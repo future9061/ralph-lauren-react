@@ -39,7 +39,6 @@ export function onUserStateChange(callback) {
     callback(updatedUser);
   });
 }
-
 const database = getDatabase(app);
 
 async function adminUser(user) {
@@ -47,6 +46,7 @@ async function adminUser(user) {
     if (snapshot.exists()) {
       const admins = snapshot.val();
       const isAdmin = admins.includes(user.uid);
+      console.log("뭔데", user);
       return { ...user, isAdmin };
     }
     return user;

@@ -5,6 +5,9 @@ module.exports = {
     extend: {
       fontFamily: {
         logoFont: [ 'Spectral', 'serif'],
+      },
+      colors:{
+        brand:'#041E3A'
       }
     }
   },
