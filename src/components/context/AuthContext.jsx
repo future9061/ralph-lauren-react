@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onUserStateChange, login, logout } from "../../api/firebase";
 
-//context가 여러 레벨의 component에게 데이터를 줄 수 있게(전역)으로
 //1. context 객체를 만듦
+//context? 여러 레벨의 component에게 데이터를 줄 수 있게(전역)으로
 const AuthContext = createContext(); //인증 정보를 다른 컴포넌트들과 공유 가능
 //defaultValue : 매개변수, 트리 안에서 적절한 provider가 없으면 굳이 안써도 ok
 
@@ -27,6 +27,7 @@ export function AuthContextProvider({ children }) {
   );
 }
 
+//useContext를 사용하여 AuthContext에서 제공되는 값을 가져옵니다.
 export function useAuthContext() {
   return useContext(AuthContext);
 }
