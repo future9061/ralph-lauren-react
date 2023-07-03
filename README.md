@@ -30,7 +30,12 @@ ralph-rouren 사이트를 클론 하여 route, firebase를 이용한 DB관리를
 
 
 #### 관리자 페이지 
-- new product에 접근하여 새 상품을 올릴 수 있음
+- firebase로 관리자 uid 지정하여 관리자만 new product에 접근하여 새 상품을 올릴 수 있음, 일반 유저 new product에 접근 못하게 protected component 만들어서 <NewProduct /> 보호
+
+#### 장바구니 
+- 개발중
+
+
 
 <br>
 
