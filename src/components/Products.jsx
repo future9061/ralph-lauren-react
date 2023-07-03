@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getProduct } from "../api/firebase";
 import ProductCard from "./ProductCard";
 
+//usequery : fetch로 데이터를 받아와서 로딩, 에러, 데이터 가져옴
+//옵션으로
 export default function Products() {
   const {
     isLoading,

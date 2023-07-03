@@ -46,7 +46,6 @@ async function adminUser(user) {
     if (snapshot.exists()) {
       const admins = snapshot.val();
       const isAdmin = admins.includes(user.uid);
-      console.log("뭔데", user);
       return { ...user, isAdmin };
     }
     return user;
@@ -70,5 +69,19 @@ export async function getProduct() {
     if (snapshot.exists()) {
       return Object.values(snapshot.val());
     }
+  });
+}
+
+//사용자의 카트의 추가하거나 업데이트
+//유저 아이디 같이 들어가서 다른 사람인걸 알려야 함
+export async function addOrUpdateToCart(userId, product) {
+  return set(ref(database, `carts/${userId}/${product.id}`), product);
+}
+
+//특정 사용자의 카트를 가져옴 그럼 get 이겠지?
+export async function getCart(userId) {
+  return get(ref(database, `carts/${userId}`)).then((snapshot) => {
+    const items = snapshot.val() || {};
+    return Object.values(items);
   });
 }
