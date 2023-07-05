@@ -1,17 +1,17 @@
-![ralphlouren](https://github.com/future9061/ralph-lauren-react/assets/132829711/3ff13a2a-f25a-439c-81ba-ff3124bef497)
+![캡처](https://github.com/future9061/ralph-lauren-react/assets/132829711/edddebdf-e560-46b9-ac2c-9d4f399a8ba5)
 <br>
 
 
-# react-Project-ralph-rouren
+### react-Project-ralph-rouren
 <br>
 
 
 ## 🖥️ 프로젝트 소개
-ralph-rouren 사이트를 클론 하여 route, firebase를 이용한 DB관리를 해봤습니다
+firebase를 이용한 DB관리,react로 ralph-rouren 사이트를 클론 하여 디자인 해서 쇼핑몰을 만들어봤습니다 
 <br>
 
 ## 🕰️ 개발 기간
-* 23.06.26일 - 미정
+* 23.06.26일 - 23.07.05
 <br>
 
 
@@ -19,7 +19,7 @@ ralph-rouren 사이트를 클론 하여 route, firebase를 이용한 DB관리를
 - `vs code 1.77`
 - **Framework** : react(18.2.0)
 - **Database** : firebase(9.23.0)
-- **library** : react-router-dom(6.14.0)
+- **library** : react-router-dom(6.14.0), react-query(3.39.3)
 <br>
 
 
@@ -33,14 +33,22 @@ ralph-rouren 사이트를 클론 하여 route, firebase를 이용한 DB관리를
 - firebase로 관리자 uid 지정하여 관리자만 new product에 접근하여 새 상품을 올릴 수 있음, 일반 유저 new product에 접근 못하게 protected component 만들어서 <NewProduct /> 보호
 
 #### 장바구니 
-- 개발중
+- 상품 디테일 페이지에서 장바구니에 추가 버튼을 누르면 firebase에 해당 유저 uid와 상품 uid가 firebase에 set 됨
+- +와 - 버튼으로 상품 개수 조절 가능
+- X누르면 firebase에서 상품 빠짐
+- 금액 총 합 기능 ca
+
+#### banner에 이미지 슬라이드 
+- react-slick을 이용
+
+
 
 
 
 <br>
 
 
-## 🎇Upgrade
+## 🎇code review
 
 - 로그인 한 후 새로고침 하면 화면상에서 log out으로 되는 문제를 useEffect로 처리!(로그인 상태에서 component가 mount 될 때 setUser)
   
@@ -107,18 +115,38 @@ async function adminUser(user) {
     if (snapshot.exists()) {
       const admins = snapshot.val();
       const isAdmin = admins.includes(user.uid);
-      return { ...user, isAdmin };
+      return { ...user, isAdmin }; 
     }
   });
 }
 
-
-
-
-
-
+//firebase에서 현재 인증자를 관찰하는 내장 객체 onAuthStateChanged
+export function onUserStateChange(callback) {
+  onAuthStateChanged(auth, async (user) => {
+    const updatedUser = user ? await adminUser(user) : null;
+    callback(updatedUser);
+  });
+}
 
 ```
+
+-useQuery로 데이터를 가져오고 보냄.
+
+```ruby
+
+```
+
+
+## 🔧upgrade 예정
+
+- detail page에서 장바구니 추가 버튼 두 번 누르거나, 옵션 다르게 한 후 추가하면 장바구니에 추가되지 않음. project의 uid가 같으면 더 이상 추가되지 않는 것 같다. 상품 개수는 오로지 cart 페이지의 + - 버튼으로만 조절 가능한 상태
+
+-favicon 넣기 
+
+
+
+
+
 
 
 ## 느낀점 📢
