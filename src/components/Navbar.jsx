@@ -13,7 +13,8 @@ export default function Navbar() {
 
   // //화면이 마운트(리로드 될때) 로그인이 되어있는 아닌지 상태를 알아보는 함수 호출
   // useEffect(() => {
-  //   onUserStateChange((user)=> {
+  //   onUserStateChange((user)=> {ation
+
   //     setUser(user)
   //     console.log('user',user)
   //   });

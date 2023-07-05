@@ -1,56 +1,88 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import Button from "../components/ui/Button";
-import { useAuthContext } from "../components/context/AuthContext";
 import { addOrUpdateToCart } from "../api/firebase";
+import { useAuthContext } from "../components/context/AuthContext";
+import Button from "../components/ui/Button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function ProductDetail() {
-  //안에 함수 들어있어서 객체 리터럴 형태로 가져옴
+  //객체 리터럴 형태로 uid 가져옴
   const { uid } = useAuthContext();
-
   const {
     state: {
-      product: { id, category, description, image, title, price, options },
+      product: { id, category, description, image, options, price, title },
     },
   } = useLocation();
-
-  //user가 option 선택 안하면 무조건 첫번째 옵션
   const [selected, setSelected] = useState(options && options[0]);
+  const [success, setSuccess] = useState(); //성공표시
 
-  //select 이벤트
-  const handSelect = (e) => {
-    setSelected(e.tatget.value);
-    console.log("select에서 발생하는 이벤트", e.tatget.value);
+  //useQuery Mutation사용- 서버에 데이터 올라가는 딜레이 없애고 바로 변경
+  const queryClient = useQueryClient();
+  //const addOrUpdateItem = useMutation( 비동기 함수(product)=> addOrUpdateToCart(uid,product),
+  const addOrUpdateItem = useMutation(
+    (product) => addOrUpdateToCart(uid, product),
+
+    {
+      //성공했을 때
+      onSuccess: () => queryClient.invalidateQueries(["carts", uid]),
+      //carts키를 가진 쿼리를 무효화(+uid를 확인하고 바로 업데이트 해줘!)
+    }
+  );
+
+  const handleSelect = (e) => {
+    setSelected(e.target.value);
+    console.log("select에서 발생하는 이벤트 e.target.value", e.target.value);
   };
-
-  //장바구니에 추가 버튼 누르면 이벤트
-  //e.target이 생략된 이유
-  //e.target은 주로 이벤트가 발생한 요소의 정보를 얻거나 조작할 때 사용되는데 해당 함수는 addOrUpdateToCart에 인자를
-  //넘겨주는 용도로만 사용되기 때문
-  const handClick = (e) => {
+  const handleClick = (e) => {
+    //장바구니에 추가
     const product = { id, title, image, options: selected, price, quantity: 1 };
-    addOrUpdateToCart(uid, product);
+
+    //.mutate 인자를 넣을 수 있는 옵션
+    // mutate함수
+    // mutate(variables, {
+    //   onError,
+    //   onSettled,
+    //   onSuccess, -> 이것만 사용한 것
+    //  })
+    addOrUpdateItem.mutate(product, {
+      onSuccess: () => {
+        // onSuccess는 요청이 성공되었을 때 실행되는 구간입니다.
+        setSuccess("장바구니에 추가되었습니다");
+        setTimeout(() => setSuccess(null), 500);
+      },
+    });
+    //addOrUpdateToCart(uid,product)
   };
 
   return (
     <div className="w-full max-w-screen-xl m-auto py-24 md:py-40">
-      <section className="flex flex-col md:flex-row">
-        <img src={image} alt={title} />
-        <div className="">
-          <p>여성의류 / {category}</p>
-          <h2>{title}</h2>
-          <p>{`₩${price}`}</p>
-          <p>{description}</p>
-          <div>
-            <label htmlFor="select">옵션</label>
-            <select name="" id="select" onChange={handSelect} value={selected}>
+      <section className="flex flex-col gap-4 md:gap-12 md:flex-row p-4">
+        <img className="w-full max-w-3xl basis-7/12 " src={image} alt={title} />
+        <div className="w-full basis-5/12 flex flex-col p-8 md:p-0">
+          <p className="text-slate-700">여성의류 / {category}</p>
+          <h2 className="text-2xl font-bold py-6">{title}</h2>
+          <p className="text-xl pt-4 pb-10 text-red-700 border-b border-gray-400">{`₩${price}`}</p>
+          <p className="py-4 text-sm">{description}</p>
+          <div className="flex items-center">
+            <label className="text-brand" htmlFor="select">
+              옵션
+            </label>
+            <select
+              className="p-2 m-4 flex-1 border border-slate-300 outline-none"
+              id="select"
+              onChange={handleSelect}
+              value={selected}
+            >
               {options &&
                 options.map((option, index) => (
                   <option key={index}>{option}</option>
                 ))}
             </select>
           </div>
-          <Button onClick={handClick} text="장바구니에 추가" />
+          {success && (
+            <p className="text-center text-2xl pb-6"> ✅ {success}</p>
+          )}
+          <Button onClick={handleClick} text="장바구니에 추가" />
         </div>
       </section>
     </div>

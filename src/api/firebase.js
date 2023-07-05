@@ -6,7 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getDatabase, get, set, ref } from "firebase/database";
+import { getDatabase, get, set, ref, remove } from "firebase/database";
 import uuid from "react-uuid";
 
 const firebaseConfig = {
@@ -28,7 +28,6 @@ export function login() {
     })
     .catch(console.error);
 }
-
 export async function logout() {
   return signOut(auth).then(() => null);
 }
@@ -67,6 +66,7 @@ export async function addNewProduct(product, image) {
 export async function getProduct() {
   return get(ref(database, "products")).then((snapshot) => {
     if (snapshot.exists()) {
+      console.log(Object.values(snapshot.val()));
       return Object.values(snapshot.val());
     }
   });
@@ -84,4 +84,9 @@ export async function getCart(userId) {
     const items = snapshot.val() || {};
     return Object.values(items);
   });
+}
+
+//카트에서 제품 삭제
+export async function removeFromCart(userId, productId) {
+  return remove(ref(database, `carts/${userId}/${productId}`));
 }
